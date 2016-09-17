@@ -1,50 +1,50 @@
 {
     "elements" : [{
             "__comment" : "plate", 
-            "from" : [3, 14, 3], 
-            "to" : [13, 15.9, 13], 
+            "from" : [4, 13, 4], 
+            "to" : [12, 15.9, 12], 
             "faces" : {
                 "down" : {
-                    "texture" : "#down"
+                    "texture" : "#downConnect"
                 }, 
                 "up" : {
-                    "texture" : "#up"
+                    "texture" : "#upConnect"
                 }, 
                 "north" : {
-                    "texture" : "#north"
+                    "texture" : "#northConnect"
                 }, 
                 "south" : {
-                    "texture" : "#south"
+                    "texture" : "#southConnect"
                 }, 
                 "west" : {
-                    "texture" : "#west"
+                    "texture" : "#westConnect"
                 }, 
                 "east" : {
-                    "texture" : "#east"
+                    "texture" : "#eastConnect"
                 }
             }
         }, {
             "__comment" : "plate", 
-            "from" : [13, 15.9, 13], 
-            "to" : [3, 14, 3], 
+            "from" : [12, 15.9, 12], 
+            "to" : [4, 13, 4], 
             "faces" : {
                 "down" : {
-                    "texture" : "#up"
+                    "texture" : "#upConnect"
                 }, 
                 "up" : {
-                    "texture" : "#down"
+                    "texture" : "#downConnect"
                 }, 
                 "north" : {
-                    "texture" : "#south"
+                    "texture" : "#southConnect"
                 }, 
                 "south" : {
-                    "texture" : "#north"
+                    "texture" : "#northConnect"
                 }, 
                 "west" : {
-                    "texture" : "#east"
+                    "texture" : "#eastConnect"
                 }, 
                 "east" : {
-                    "texture" : "#west"
+                    "texture" : "#westConnect"
                 }
             }
         }]
