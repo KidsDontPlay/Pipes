@@ -1,0 +1,249 @@
+{
+    "forge_marker" : 1, 
+    "defaults" : {
+        "textures" : {
+            "particle" : "pipes:blocks/itemPipe", 
+            "upCenter" : "pipes:blocks/itemPipe", 
+            "downCenter" : "pipes:blocks/itemPipe", 
+            "northCenter" : "pipes:blocks/itemPipe", 
+            "southCenter" : "pipes:blocks/itemPipe", 
+            "eastCenter" : "pipes:blocks/itemPipe", 
+            "westCenter" : "pipes:blocks/itemPipe", 
+            "upPin" : "pipes:blocks/itemPipe", 
+            "downPin" : "pipes:blocks/itemPipe", 
+            "northPin" : "pipes:blocks/itemPipe", 
+            "southPin" : "pipes:blocks/itemPipe", 
+            "eastPin" : "pipes:blocks/itemPipe", 
+            "westPin" : "pipes:blocks/itemPipe"
+        }, 
+        "model" : "pipes:pipeCenter"
+    }, 
+    "variants" : {
+        "normal" : [{
+                
+            }], 
+        "inventory" : [{
+                "transform" : "forge:default-block", 
+                "y" : 90
+            }], 
+        "north" : {
+            "pipe" : {
+                "textures" : {
+                    "northCenter" : "pipes:blocks/invisible"
+                }, 
+                "submodel" : {
+                    "s1" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90
+                    }
+                }
+            }, 
+            "tile" : {
+                "submodel" : {
+                    "s1" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90
+                    }, 
+                    "s1s" : {
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 90
+                    }
+                }
+            }, 
+            "null" : {
+                
+            }
+        }, 
+        "south" : {
+            "pipe" : {
+                "textures" : {
+                    "southCenter" : "pipes:blocks/invisible"
+                }, 
+                "submodel" : {
+                    "s2" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 270
+                    }
+                }
+            }, 
+            "tile" : {
+                "submodel" : {
+                    "s2" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 270
+                    }, 
+                    "s2s" : {
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 270
+                    }
+                }
+            }, 
+            "null" : {
+                
+            }
+        }, 
+        "west" : {
+            "pipe" : {
+                "textures" : {
+                    "westCenter" : "pipes:blocks/invisible"
+                }, 
+                "submodel" : {
+                    "s3" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90, 
+                        "y" : 270
+                    }
+                }
+            }, 
+            "tile" : {
+                "submodel" : {
+                    "s3" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90, 
+                        "y" : 270
+                    }, 
+                    "s3s" : {
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 90, 
+                        "y" : 270
+                    }
+                }
+            }, 
+            "null" : {
+                
+            }
+        }, 
+        "east" : {
+            "pipe" : {
+                "textures" : {
+                    "eastCenter" : "pipes:blocks/invisible"
+                }, 
+                "submodel" : {
+                    "s4" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90, 
+                        "y" : 90
+                    }
+                }
+            }, 
+            "tile" : {
+                "submodel" : {
+                    "s4" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90, 
+                        "y" : 90
+                    }, 
+                    "s4s" : {
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 90, 
+                        "y" : 90
+                    }
+                }
+            }, 
+            "null" : {
+                
+            }
+        }, 
+        "up" : {
+            "pipe" : {
+                "textures" : {
+                    "upCenter" : "pipes:blocks/invisible"
+                }, 
+                "submodel" : {
+                    "s5" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin"
+                    }
+                }
+            }, 
+            "tile" : {
+                "submodel" : {
+                    "s5" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin"
+                    }, 
+                    "s5s" : {
+                        "model" : "pipes:pipeConnect"
+                    }
+                }
+            }, 
+            "null" : {
+                
+            }
+        }, 
+        "down" : {
+            "pipe" : {
+                "textures" : {
+                    "downCenter" : "pipes:blocks/invisible"
+                }, 
+                "submodel" : {
+                    "s6" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 180
+                    }
+                }
+            }, 
+            "tile" : {
+                "submodel" : {
+                    "s6" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 180
+                    }, 
+                    "s6s" : {
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 180
+                    }
+                }
+            }, 
+            "null" : {
+                
+            }
+        }
+    }
+}

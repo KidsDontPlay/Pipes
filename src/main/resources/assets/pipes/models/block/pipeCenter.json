@@ -1,0 +1,51 @@
+{
+    "elements" : [{
+            "__comment" : "center", 
+            "from" : [5, 5, 5], 
+            "to" : [11, 11, 11], 
+            "faces" : {
+                "down" : {
+                    "texture" : "#downCenter"
+                }, 
+                "up" : {
+                    "texture" : "#upCenter"
+                }, 
+                "north" : {
+                    "texture" : "#northCenter"
+                }, 
+                "south" : {
+                    "texture" : "#southCenter"
+                }, 
+                "west" : {
+                    "texture" : "#westCenter"
+                }, 
+                "east" : {
+                    "texture" : "#eastCenter"
+                }
+            }
+        }, {
+            "__comment" : "center", 
+            "from" : [11, 11, 11], 
+            "to" : [5, 5, 5], 
+            "faces" : {
+                "down" : {
+                    "texture" : "#upCenter"
+                }, 
+                "up" : {
+                    "texture" : "#downCenter"
+                }, 
+                "north" : {
+                    "texture" : "#southCenter"
+                }, 
+                "south" : {
+                    "texture" : "#northCenter"
+                }, 
+                "west" : {
+                    "texture" : "#eastCenter"
+                }, 
+                "east" : {
+                    "texture" : "#westCenter"
+                }
+            }
+        }]
+}
