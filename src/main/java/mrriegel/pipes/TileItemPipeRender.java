@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
@@ -37,13 +36,17 @@ public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> 
 		GlStateManager.pushMatrix();
 		GlStateManager.disableLighting();
 
+		// GuiUtils.drawGradientRect(0, 0, 0, 1, 1, Color.red.getRGB(),
+		// Color.red.getRGB());
+
 		float rotation = (float) (720.0 * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL);
-		rotation=0;
+		rotation = 0;
 		GlStateManager.rotate(rotation, 0.0F, 1.0F, 0);
 		GlStateManager.scale(0.4F, 0.4F, 0.4F);
 		GlStateManager.pushAttrib();
 		RenderHelper.enableStandardItemLighting();
-		itemRenderer.renderItem(ei.getEntityItem(), ItemCameraTransforms.TransformType.FIXED);
+		// itemRenderer.renderItem(ei.getEntityItem(),
+		// ItemCameraTransforms.TransformType.FIXED);
 		RenderHelper.disableStandardItemLighting();
 		GlStateManager.popAttrib();
 

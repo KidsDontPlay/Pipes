@@ -1,7 +1,6 @@
 package mrriegel.pipes;
 
 import mrriegel.limelib.helper.IProxy;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;

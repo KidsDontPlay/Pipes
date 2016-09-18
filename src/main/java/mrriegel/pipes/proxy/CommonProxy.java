@@ -6,12 +6,10 @@ import mrriegel.pipes.handler.ConfigHandler;
 import mrriegel.pipes.handler.GuiHandler;
 import mrriegel.pipes.init.ModBlocks;
 import mrriegel.pipes.init.ModItems;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class CommonProxy implements IProxy {
 

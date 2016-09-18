@@ -2,7 +2,6 @@ package mrriegel.pipes.tile;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import mrriegel.limelib.tile.CommonTile;
 import mrriegel.pipes.block.BlockPipeBase;
@@ -73,13 +72,9 @@ public class TilePipeBase extends CommonTile implements ITickable {
 		pipes = Sets.newHashSet();
 		ends = Sets.newHashSet();
 		addPipes(pos);
-		pipes.forEach(new Consumer<BlockPos>() {
-			@Override
-			public void accept(BlockPos t) {
-				if (hasCons(t))
-					ends.add(t);
-			}
-		});
+		for (BlockPos t : pipes)
+			if (hasCons(t))
+				ends.add(t);
 		ends.remove(pos);
 	}
 

@@ -58,6 +58,38 @@
                         "x" : 90
                     }, 
                     "s1s" : {
+                        "textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnect", 
+                            "downConnect" : "pipes:blocks/itemPipeConnect", 
+                            "northConnect" : "pipes:blocks/itemPipeConnect", 
+                            "southConnect" : "pipes:blocks/itemPipeConnect", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
+                            "westConnect" : "pipes:blocks/itemPipeConnect"
+                        }, 
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 90
+                    }
+                }
+            }, 
+            "tileout" : {
+                "submodel" : {
+                    "s1" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90
+                    }, 
+                    "s1s" : {
+                        "textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                        }, 
                         "model" : "pipes:pipeConnect", 
                         "x" : 90
                     }
@@ -93,7 +125,37 @@
                         "model" : "pipes:pipePin", 
                         "x" : 270
                     }, 
-                    "s2s" : {
+                    "s2s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnect", 
+                            "downConnect" : "pipes:blocks/itemPipeConnect", 
+                            "northConnect" : "pipes:blocks/itemPipeConnect", 
+                            "southConnect" : "pipes:blocks/itemPipeConnect", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
+                            "westConnect" : "pipes:blocks/itemPipeConnect"
+                        }, 
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 270
+                    }
+                }
+            }, 
+            "tileout" : {
+                "submodel" : {
+                    "s2" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 270
+                    }, 
+                    "s2s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                        },
                         "model" : "pipes:pipeConnect", 
                         "x" : 270
                     }
@@ -131,7 +193,39 @@
                         "x" : 90, 
                         "y" : 270
                     }, 
-                    "s3s" : {
+                    "s3s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnect", 
+                            "downConnect" : "pipes:blocks/itemPipeConnect", 
+                            "northConnect" : "pipes:blocks/itemPipeConnect", 
+                            "southConnect" : "pipes:blocks/itemPipeConnect", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
+                            "westConnect" : "pipes:blocks/itemPipeConnect"
+                        }, 
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 90, 
+                        "y" : 270
+                    }
+                }
+            }, 
+            "tileout" : {
+                "submodel" : {
+                    "s3" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90, 
+                        "y" : 270
+                    }, 
+                    "s3s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                        },
                         "model" : "pipes:pipeConnect", 
                         "x" : 90, 
                         "y" : 270
@@ -170,7 +264,39 @@
                         "x" : 90, 
                         "y" : 90
                     }, 
-                    "s4s" : {
+                    "s4s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnect", 
+                            "downConnect" : "pipes:blocks/itemPipeConnect", 
+                            "northConnect" : "pipes:blocks/itemPipeConnect", 
+                            "southConnect" : "pipes:blocks/itemPipeConnect", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
+                            "westConnect" : "pipes:blocks/itemPipeConnect"
+                        }, 
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 90, 
+                        "y" : 90
+                    }
+                }
+            }, 
+            "tileout" : {
+                "submodel" : {
+                    "s4" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 90, 
+                        "y" : 90
+                    }, 
+                    "s4s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                        },
                         "model" : "pipes:pipeConnect", 
                         "x" : 90, 
                         "y" : 90
@@ -205,7 +331,35 @@
                         }, 
                         "model" : "pipes:pipePin"
                     }, 
-                    "s5s" : {
+                    "s5s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnect", 
+                            "downConnect" : "pipes:blocks/itemPipeConnect", 
+                            "northConnect" : "pipes:blocks/itemPipeConnect", 
+                            "southConnect" : "pipes:blocks/itemPipeConnect", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
+                            "westConnect" : "pipes:blocks/itemPipeConnect"
+                        }, 
+                        "model" : "pipes:pipeConnect"
+                    }
+                }
+            }, 
+            "tileout" : {
+                "submodel" : {
+                    "s5" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin"
+                    }, 
+                    "s5s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                        },
                         "model" : "pipes:pipeConnect"
                     }
                 }
@@ -240,28 +394,43 @@
                         "model" : "pipes:pipePin", 
                         "x" : 180
                     }, 
-                    "s6s" : {
+                    "s6s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnect", 
+                            "downConnect" : "pipes:blocks/itemPipeConnect", 
+                            "northConnect" : "pipes:blocks/itemPipeConnect", 
+                            "southConnect" : "pipes:blocks/itemPipeConnect", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
+                            "westConnect" : "pipes:blocks/itemPipeConnect"
+                        }, 
+                        "model" : "pipes:pipeConnect", 
+                        "x" : 180
+                    }
+                }
+            }, 
+            "tileout" : {
+                "submodel" : {
+                    "s6" : {
+                        "textures" : {
+                            "upPin" : "pipes:blocks/invisible", 
+                            "downPin" : "pipes:blocks/invisible"
+                        }, 
+                        "model" : "pipes:pipePin", 
+                        "x" : 180
+                    }, 
+                    "s6s" : {"textures" : {
+                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                            "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                        }, 
                         "model" : "pipes:pipeConnect", 
                         "x" : 180
                     }
                 }
             }, 
             "null" : {
-                
-            }
-        }, 
-        "out" : {
-            "true" : {
-                "textures" : {
-                    "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                    "downConnect" : "pipes:blocks/itemPipeConnectOut", 
-                    "northConnect" : "pipes:blocks/itemPipeConnectOut", 
-                    "southConnect" : "pipes:blocks/itemPipeConnectOut", 
-                    "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
-                    "westConnect" : "pipes:blocks/itemPipeConnectOut"
-                }
-            }, 
-            "false" : {
                 
             }
         }
