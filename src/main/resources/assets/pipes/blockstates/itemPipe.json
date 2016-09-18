@@ -249,6 +249,24 @@
             "null" : {
                 
             }
+        }, 
+        "out" : {
+            "true" : {
+                "textures" : {
+                    "upConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "northConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "southConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "westConnect" : "pipes:blocks/itemPipeConnectOut"
+                }
+            }, 
+            "false" : {
+                
+            }
+        }, 
+        "in" : {
+            "true":{},"false":{}
         }
     }
 }

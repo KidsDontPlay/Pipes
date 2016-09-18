@@ -7,17 +7,26 @@ import javax.annotation.Nullable;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.pipes.proxy.ClientProxy;
 import mrriegel.pipes.tile.TilePipeBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,6 +40,8 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 	public static final IProperty<Connect> EAST = PropertyEnum.<Connect> create("east", Connect.class);
 	public static final IProperty<Connect> UP = PropertyEnum.<Connect> create("up", Connect.class);
 	public static final IProperty<Connect> DOWN = PropertyEnum.<Connect> create("down", Connect.class);
+	public static final IProperty<Boolean> OUT = PropertyBool.create("out");
+	public static final IProperty<Boolean> IN = PropertyBool.create("in");
 
 	public BlockPipeBase(String name) {
 		super(Material.IRON, name);
@@ -40,9 +51,6 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess worldIn, BlockPos pos, EnumFacing side) {
-		// if (getConnect(worldIn, pos, side) != Connect.NULL)
-		// return false;
-		System.out.println("default: " + super.shouldSideBeRendered(blockState, worldIn, pos, side));
 		return false;
 	}
 
@@ -73,7 +81,7 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, NORTH, SOUTH, WEST, EAST, UP, DOWN);
+		return new BlockStateContainer(this, NORTH, SOUTH, WEST, EAST, UP, DOWN, OUT, IN);
 	}
 
 	@Override
@@ -83,13 +91,13 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		return state.withProperty(NORTH, getConnect(worldIn, pos, EnumFacing.NORTH)).withProperty(SOUTH, getConnect(worldIn, pos, EnumFacing.SOUTH)).withProperty(WEST, getConnect(worldIn, pos, EnumFacing.WEST)).withProperty(EAST, getConnect(worldIn, pos, EnumFacing.EAST)).withProperty(UP, getConnect(worldIn, pos, EnumFacing.UP)).withProperty(DOWN, getConnect(worldIn, pos, EnumFacing.DOWN));
+		return state.withProperty(NORTH, getConnect(worldIn, pos, EnumFacing.NORTH)).withProperty(SOUTH, getConnect(worldIn, pos, EnumFacing.SOUTH)).withProperty(WEST, getConnect(worldIn, pos, EnumFacing.WEST)).withProperty(EAST, getConnect(worldIn, pos, EnumFacing.EAST)).withProperty(UP, getConnect(worldIn, pos, EnumFacing.UP)).withProperty(DOWN, getConnect(worldIn, pos, EnumFacing.DOWN)).withProperty(OUT, worldIn.getTileEntity(pos) != null ? ((TilePipeBase) worldIn.getTileEntity(pos)).isOut() : false).withProperty(IN, worldIn.getTileEntity(pos) != null ? ((TilePipeBase) worldIn.getTileEntity(pos)).isIn() : false);
 	}
 
-	protected Connect getConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
+	public Connect getConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
 		if (worldIn.getTileEntity(pos) != null && !((TilePipeBase) worldIn.getTileEntity(pos)).validConnection(facing))
 			return Connect.NULL;
-		if (worldIn.getBlockState(pos.offset(facing)).getBlock().getClass() == this.getClass())
+		if (getTile().isInstance(worldIn.getTileEntity(pos.offset(facing))) && ((TilePipeBase) worldIn.getTileEntity(pos.offset(facing))).validConnection(facing.getOpposite()))
 			return Connect.PIPE;
 		else if (validTile(worldIn, pos.offset(facing), facing.getOpposite()))
 			return Connect.TILE;
@@ -99,8 +107,42 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 	protected abstract boolean validTile(IBlockAccess worldIn, BlockPos pos, EnumFacing facing);
 
 	@Override
+	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
+		EnumFacing f = getFace(hitX, hitY, hitZ);
+		if (f != null) {
+			System.out.println(((TilePipeBase) worldIn.getTileEntity(pos)).getValids());
+			((TilePipeBase) worldIn.getTileEntity(pos)).getValids().put(f, false);
+			worldIn.markBlockRangeForRenderUpdate(pos.add(1, 1, 1), pos.add(-1, -1, -1));
+		}
+		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
+	}
+
+	private EnumFacing getFace(float hitX, float hitY, float hitZ) {
+		if (!center(hitY) && !center(hitZ))
+			if (hitX < .25F)
+				return EnumFacing.WEST;
+			else if (hitX > .75F)
+				return EnumFacing.EAST;
+		if (!center(hitY) && !center(hitX))
+			if (hitZ < .25F)
+				return EnumFacing.NORTH;
+			else if (hitZ > .75F)
+				return EnumFacing.SOUTH;
+		if (!center(hitX) && !center(hitZ))
+			if (hitY < .25F)
+				return EnumFacing.DOWN;
+			else if (hitY > .75F)
+				return EnumFacing.UP;
+		return null;
+	}
+
+	private boolean center(float foo) {
+		return foo > .25f && foo < .25f;
+	}
+
+	@Override
 	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn) {
-		state = state.getActualState(worldIn, pos);
+		state = getActualState(state, worldIn, pos);
 		addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.3125, 0.3125, 0.3125, 0.6875, 0.6875, 0.6875));
 		if (state.getValue(DOWN) != Connect.NULL)
 			addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.3125, 0.0, 0.3125, 0.6875, 0.3125, 0.6875));
@@ -117,8 +159,25 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 	}
 
 	@Override
+	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
+		// System.out.println("coll");
+		return super.getCollisionBoundingBox(blockState, worldIn, pos);
+	}
+
+	@Override
+	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
+		return super.getSelectedBoundingBox(state, worldIn, pos);
+	}
+
+	@Override
+	public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
+		// System.out.println("ray");
+		return super.collisionRayTrace(blockState, worldIn, pos, start, end);
+	}
+
+	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-		state = state.getActualState(source, pos);
+		state = getActualState(state, source, pos);
 		double f = 0.3125;
 		double f1 = 0.6875;
 		double f2 = 0.3125;
