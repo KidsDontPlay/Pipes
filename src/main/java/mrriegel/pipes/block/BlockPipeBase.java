@@ -4,7 +4,12 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
+
 import mrriegel.limelib.block.CommonBlockContainer;
+import mrriegel.limelib.helper.BlockHelper;
 import mrriegel.pipes.proxy.ClientProxy;
 import mrriegel.pipes.tile.TilePipeBase;
 import net.minecraft.block.Block;
@@ -18,6 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -29,6 +35,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -40,12 +47,24 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 	public static final IProperty<Connect> EAST = PropertyEnum.<Connect> create("east", Connect.class);
 	public static final IProperty<Connect> UP = PropertyEnum.<Connect> create("up", Connect.class);
 	public static final IProperty<Connect> DOWN = PropertyEnum.<Connect> create("down", Connect.class);
-	public static final IProperty<Boolean> OUT = PropertyBool.create("out");
-	public static final IProperty<Boolean> IN = PropertyBool.create("in");
+	public static final IProperty<Boolean> OUTN = PropertyBool.create("outN");
+	public static final IProperty<Boolean> OUTS = PropertyBool.create("outS");
+	public static final IProperty<Boolean> OUTW = PropertyBool.create("outW");
+	public static final IProperty<Boolean> OUTE = PropertyBool.create("outE");
+	public static final IProperty<Boolean> OUTU = PropertyBool.create("outU");
+	public static final IProperty<Boolean> OUTD = PropertyBool.create("outD");
+
+	public static final BiMap<IProperty<Connect>, EnumFacing> map = HashBiMap.create(6);
 
 	public BlockPipeBase(String name) {
 		super(Material.IRON, name);
 		setCreativeTab(ClientProxy.tab);
+		map.put(NORTH, EnumFacing.NORTH);
+		map.put(SOUTH, EnumFacing.SOUTH);
+		map.put(WEST, EnumFacing.WEST);
+		map.put(EAST, EnumFacing.EAST);
+		map.put(UP, EnumFacing.UP);
+		map.put(DOWN, EnumFacing.DOWN);
 	}
 
 	@Override
@@ -81,7 +100,7 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 
 	@Override
 	protected BlockStateContainer createBlockState() {
-		return new BlockStateContainer(this, NORTH, SOUTH, WEST, EAST, UP, DOWN, OUT, IN);
+		return new BlockStateContainer(this, NORTH, SOUTH, WEST, EAST, UP, DOWN, OUTN, OUTS, OUTW, OUTE, OUTU, OUTD);
 	}
 
 	@Override
@@ -91,7 +110,19 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		return state.withProperty(NORTH, getConnect(worldIn, pos, EnumFacing.NORTH)).withProperty(SOUTH, getConnect(worldIn, pos, EnumFacing.SOUTH)).withProperty(WEST, getConnect(worldIn, pos, EnumFacing.WEST)).withProperty(EAST, getConnect(worldIn, pos, EnumFacing.EAST)).withProperty(UP, getConnect(worldIn, pos, EnumFacing.UP)).withProperty(DOWN, getConnect(worldIn, pos, EnumFacing.DOWN)).withProperty(OUT, worldIn.getTileEntity(pos) != null ? ((TilePipeBase) worldIn.getTileEntity(pos)).isOut() : false).withProperty(IN, worldIn.getTileEntity(pos) != null ? ((TilePipeBase) worldIn.getTileEntity(pos)).isIn() : false);
+		TilePipeBase tile=(TilePipeBase) worldIn.getTileEntity(pos);
+		return state.withProperty(NORTH, getConnect(worldIn, pos, EnumFacing.NORTH))
+				.withProperty(SOUTH, getConnect(worldIn, pos, EnumFacing.SOUTH))
+				.withProperty(WEST, getConnect(worldIn, pos, EnumFacing.WEST))
+				.withProperty(EAST, getConnect(worldIn, pos, EnumFacing.EAST))
+				.withProperty(UP, getConnect(worldIn, pos, EnumFacing.UP))
+				.withProperty(DOWN, getConnect(worldIn, pos, EnumFacing.DOWN))
+				.withProperty(OUTN, tile != null ? tile.getOuts().get(EnumFacing.NORTH) : false)
+				.withProperty(OUTS, tile != null ? tile.getOuts().get(EnumFacing.SOUTH) : false)
+				.withProperty(OUTW, tile != null ? tile.getOuts().get(EnumFacing.WEST) : false)
+				.withProperty(OUTE, tile != null ? tile.getOuts().get(EnumFacing.EAST) : false)
+				.withProperty(OUTU, tile != null ? tile.getOuts().get(EnumFacing.UP) : false)
+				.withProperty(OUTD, tile != null ? tile.getOuts().get(EnumFacing.DOWN) : false);
 	}
 
 	public Connect getConnect(IBlockAccess worldIn, BlockPos pos, EnumFacing facing) {
@@ -109,10 +140,27 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		EnumFacing f = getFace(hitX, hitY, hitZ);
-		if (f != null) {
-			System.out.println(((TilePipeBase) worldIn.getTileEntity(pos)).getValids());
-			((TilePipeBase) worldIn.getTileEntity(pos)).getValids().put(f, false);
+		TilePipeBase tile = (TilePipeBase) worldIn.getTileEntity(pos);
+		if (new ItemStack(Items.STICK).isItemEqual(playerIn.inventory.getCurrentItem())) {
+			if (f != null) {
+				tile.getValids().put(f, false);
+				if (worldIn.getTileEntity(pos.offset(f)) instanceof TilePipeBase)
+					((TilePipeBase) worldIn.getTileEntity(pos.offset(f))).getValids().put(f.getOpposite(), false);
+			} else {
+				if (state.getValue(map.inverse().get(side)) == Connect.NULL && !((TilePipeBase) worldIn.getTileEntity(pos)).getValids().get(side)) {
+					tile.getValids().put(side, true);
+					if (worldIn.getTileEntity(pos.offset(side)) instanceof TilePipeBase) {
+						((TilePipeBase) worldIn.getTileEntity(pos.offset(side))).getValids().put(side.getOpposite(), true);
+					}
+				}
+			}
 			worldIn.markBlockRangeForRenderUpdate(pos.add(1, 1, 1), pos.add(-1, -1, -1));
+			tile.buildNetwork();
+		} else {
+			// tile.buildNetwork();
+			// for (BlockPos p : tile.ends)
+			// worldIn.setBlockState(p.up(),
+			// Blocks.STAINED_GLASS.getDefaultState());
 		}
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
@@ -156,23 +204,6 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 			addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.3125, 0.3125, 0, 0.6875, 0.6875, 0.3125));
 		if (state.getValue(SOUTH) != Connect.NULL)
 			addCollisionBoxToList(pos, entityBox, collidingBoxes, new AxisAlignedBB(0.3125, 0.3125, 0.6875, 0.6875, 0.6875, 1));
-	}
-
-	@Override
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, World worldIn, BlockPos pos) {
-		// System.out.println("coll");
-		return super.getCollisionBoundingBox(blockState, worldIn, pos);
-	}
-
-	@Override
-	public AxisAlignedBB getSelectedBoundingBox(IBlockState state, World worldIn, BlockPos pos) {
-		return super.getSelectedBoundingBox(state, worldIn, pos);
-	}
-
-	@Override
-	public RayTraceResult collisionRayTrace(IBlockState blockState, World worldIn, BlockPos pos, Vec3d start, Vec3d end) {
-		// System.out.println("ray");
-		return super.collisionRayTrace(blockState, worldIn, pos, start, end);
 	}
 
 	@Override
