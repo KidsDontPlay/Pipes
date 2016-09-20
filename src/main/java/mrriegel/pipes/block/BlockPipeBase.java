@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import mrriegel.limelib.block.CommonBlockContainer;
 import mrriegel.pipes.proxy.ClientProxy;
 import mrriegel.pipes.tile.TilePipeBase;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
@@ -14,6 +15,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
@@ -50,6 +52,19 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 		map.put(EAST, EnumFacing.EAST);
 		map.put(UP, EnumFacing.UP);
 		map.put(DOWN, EnumFacing.DOWN);
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn) {
+		boolean replaceable = false;
+		try {
+			replaceable = blockIn.isReplaceable(worldIn, pos.up());
+		} catch (Exception e) {
+			replaceable = true;
+		}
+		if (!blockIn.hasTileEntity() && blockIn != Blocks.AIR && !replaceable)
+			return;
+		((TilePipeBase) worldIn.getTileEntity(pos)).setNeedsRefresh(true);
 	}
 
 	@Override
@@ -145,11 +160,11 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 		worldIn.markBlockRangeForRenderUpdate(pos.add(1, 1, 1), pos.add(-1, -1, -1));
 		if (tile != null)
 			tile.buildNetwork();
-		System.out.println(getActualState(state, worldIn, pos));
+		// System.out.println(getActualState(state, worldIn, pos));
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
-	private EnumFacing getFace(float hitX, float hitY, float hitZ) {
+	protected EnumFacing getFace(float hitX, float hitY, float hitZ) {
 		if (!center(hitY) && !center(hitZ))
 			if (hitX < .25F)
 				return EnumFacing.WEST;

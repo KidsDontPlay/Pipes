@@ -58,14 +58,6 @@
                         "x" : 90
                     }, 
                     "s1s" : {
-                        "textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnect", 
-                            "downConnect" : "pipes:blocks/itemPipeConnect", 
-                            "northConnect" : "pipes:blocks/itemPipeConnect", 
-                            "southConnect" : "pipes:blocks/itemPipeConnect", 
-                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
-                            "westConnect" : "pipes:blocks/itemPipeConnect"
-                        }, 
                         "model" : "pipes:pipeConnect", 
                         "x" : 90
                     }
@@ -83,8 +75,6 @@
                     }, 
                     "s1s" : {
                         "textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "northConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "southConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
@@ -125,14 +115,7 @@
                         "model" : "pipes:pipePin", 
                         "x" : 270
                     }, 
-                    "s2s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnect", 
-                            "downConnect" : "pipes:blocks/itemPipeConnect", 
-                            "northConnect" : "pipes:blocks/itemPipeConnect", 
-                            "southConnect" : "pipes:blocks/itemPipeConnect", 
-                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
-                            "westConnect" : "pipes:blocks/itemPipeConnect"
-                        }, 
+                    "s2s" : {
                         "model" : "pipes:pipeConnect", 
                         "x" : 270
                     }
@@ -148,14 +131,13 @@
                         "model" : "pipes:pipePin", 
                         "x" : 270
                     }, 
-                    "s2s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "s2s" : {
+                        "textures" : {
                             "northConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "southConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "westConnect" : "pipes:blocks/itemPipeConnectOut"
-                        },
+                        }, 
                         "model" : "pipes:pipeConnect", 
                         "x" : 270
                     }
@@ -193,14 +175,7 @@
                         "x" : 90, 
                         "y" : 270
                     }, 
-                    "s3s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnect", 
-                            "downConnect" : "pipes:blocks/itemPipeConnect", 
-                            "northConnect" : "pipes:blocks/itemPipeConnect", 
-                            "southConnect" : "pipes:blocks/itemPipeConnect", 
-                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
-                            "westConnect" : "pipes:blocks/itemPipeConnect"
-                        }, 
+                    "s3s" : {
                         "model" : "pipes:pipeConnect", 
                         "x" : 90, 
                         "y" : 270
@@ -218,14 +193,13 @@
                         "x" : 90, 
                         "y" : 270
                     }, 
-                    "s3s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "s3s" : {
+                        "textures" : {
                             "northConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "southConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "westConnect" : "pipes:blocks/itemPipeConnectOut"
-                        },
+                        }, 
                         "model" : "pipes:pipeConnect", 
                         "x" : 90, 
                         "y" : 270
@@ -264,14 +238,7 @@
                         "x" : 90, 
                         "y" : 90
                     }, 
-                    "s4s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnect", 
-                            "downConnect" : "pipes:blocks/itemPipeConnect", 
-                            "northConnect" : "pipes:blocks/itemPipeConnect", 
-                            "southConnect" : "pipes:blocks/itemPipeConnect", 
-                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
-                            "westConnect" : "pipes:blocks/itemPipeConnect"
-                        }, 
+                    "s4s" : {
                         "model" : "pipes:pipeConnect", 
                         "x" : 90, 
                         "y" : 90
@@ -289,14 +256,13 @@
                         "x" : 90, 
                         "y" : 90
                     }, 
-                    "s4s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "s4s" : {
+                        "textures" : {
                             "northConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "southConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "westConnect" : "pipes:blocks/itemPipeConnectOut"
-                        },
+                        }, 
                         "model" : "pipes:pipeConnect", 
                         "x" : 90, 
                         "y" : 90
@@ -331,14 +297,7 @@
                         }, 
                         "model" : "pipes:pipePin"
                     }, 
-                    "s5s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnect", 
-                            "downConnect" : "pipes:blocks/itemPipeConnect", 
-                            "northConnect" : "pipes:blocks/itemPipeConnect", 
-                            "southConnect" : "pipes:blocks/itemPipeConnect", 
-                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
-                            "westConnect" : "pipes:blocks/itemPipeConnect"
-                        }, 
+                    "s5s" : {
                         "model" : "pipes:pipeConnect"
                     }
                 }
@@ -352,14 +311,13 @@
                         }, 
                         "model" : "pipes:pipePin"
                     }, 
-                    "s5s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "s5s" : {
+                        "textures" : {
                             "northConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "southConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "westConnect" : "pipes:blocks/itemPipeConnectOut"
-                        },
+                        }, 
                         "model" : "pipes:pipeConnect"
                     }
                 }
@@ -394,14 +352,7 @@
                         "model" : "pipes:pipePin", 
                         "x" : 180
                     }, 
-                    "s6s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnect", 
-                            "downConnect" : "pipes:blocks/itemPipeConnect", 
-                            "northConnect" : "pipes:blocks/itemPipeConnect", 
-                            "southConnect" : "pipes:blocks/itemPipeConnect", 
-                            "eastConnect" : "pipes:blocks/itemPipeConnect", 
-                            "westConnect" : "pipes:blocks/itemPipeConnect"
-                        }, 
+                    "s6s" : {
                         "model" : "pipes:pipeConnect", 
                         "x" : 180
                     }
@@ -417,9 +368,8 @@
                         "model" : "pipes:pipePin", 
                         "x" : 180
                     }, 
-                    "s6s" : {"textures" : {
-                            "upConnect" : "pipes:blocks/itemPipeConnectOut", 
-                            "downConnect" : "pipes:blocks/itemPipeConnectOut", 
+                    "s6s" : {
+                        "textures" : {
                             "northConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "southConnect" : "pipes:blocks/itemPipeConnectOut", 
                             "eastConnect" : "pipes:blocks/itemPipeConnectOut", 
