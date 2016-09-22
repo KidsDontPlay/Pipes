@@ -1,10 +1,14 @@
 package mrriegel.pipes;
 
+import java.util.List;
+
+import mrriegel.pipes.tile.TileItemPipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -14,10 +18,84 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 	public Pair<BlockPos, EnumFacing> out, in;
 	public Vec3d current;
 	public ItemStack stack;
-	public boolean blocked = false;
-	public Path path;
+	public boolean blocked, centerReached, toRemove;
+	public BlockPos next;
+	private int id;
 
 	public TransferItem() {
+	}
+
+	public boolean refreshNext(World world) {
+		BlockPos now = getCurrentPos();
+		if (next != null && !now.equals(next))
+			return true;
+		if (next != null)
+			toRemove = true;
+		TileItemPipe pipe = getCurrentPipe(world);
+		// System.out.println(pipe+"  "+toRemove);
+		List<BlockPos> path = pipe.getGraph().getShortestPath(in.getLeft());
+		// toRemove=true;
+		if (path.isEmpty()) {
+			blocked = true;
+			return true;
+		}
+		if (path.size() > 1) {
+			next = path.get(1);
+			return true;
+		} else {
+			next = in.getKey();
+			return false;
+		}
+	}
+
+	public TileItemPipe getCurrentPipe(World world) {
+		return (TileItemPipe) world.getTileEntity(getCurrentPos());
+	}
+
+	public BlockPos getCurrentPos() {
+		return new BlockPos(current);
+	}
+
+	public void move(World world, double speed) {
+		refreshNext(world);
+		// System.out.println("rmove " + toRemove+'\t'+getCurrentPos());
+		if (blocked) {
+			if (!next.equals(getCurrentPos())) {
+				blocked = false;
+			}
+		} else {
+			if (!centerReached) {
+				current = current.add(getVecToCenter().scale(speed / getVecToCenter().lengthVector()));
+				if (inCenter(getCurrentPos())) {
+					System.out.println("center reached");
+					centerReached = true;
+					getCurrentPipe(world).sync();
+					BlockPos tmp = getCurrentPos();
+					current = new Vec3d(tmp.getX() + .5, tmp.getY() + .5, tmp.getZ() + .5);
+				}
+			} else {
+				current = current.add(getVecToNextCenter().scale(speed / getVecToNextCenter().lengthVector()));
+			}
+		}
+	}
+
+	Vec3d getVecToCenter() {
+		BlockPos cur = getCurrentPos();
+		Vec3d c = new Vec3d(cur.getX() + .5, cur.getY() + .5, cur.getZ() + .5);
+		return new Vec3d(c.xCoord - current.xCoord, c.yCoord - current.yCoord, c.zCoord - current.zCoord);
+	}
+
+	Vec3d getVecToNextCenter() {
+		BlockPos cur = next;
+		Vec3d c = new Vec3d(cur.getX() + .5, cur.getY() + .5, cur.getZ() + .5);
+		return new Vec3d(c.xCoord - current.xCoord, c.yCoord - current.yCoord, c.zCoord - current.zCoord);
+	}
+
+	boolean inCenter(BlockPos pos) {
+		double offset = .01;
+		Vec3d cen = new Vec3d(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+		return cen.distanceTo(current) < offset;
+
 	}
 
 	public void readFromNBT(NBTTagCompound compound) {
@@ -26,8 +104,11 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 		in = new ImmutablePair<BlockPos, EnumFacing>(BlockPos.fromLong(compound.getLong("inpos")), EnumFacing.values()[compound.getInteger("inface")]);
 		current = new Vec3d(compound.getDouble("xx"), compound.getDouble("yy"), compound.getDouble("zz"));
 		blocked = compound.getBoolean("blocked");
-		path=new Path();
-		path.deserializeNBT(compound.getCompoundTag("path"));
+		centerReached = compound.getBoolean("center");
+		toRemove = compound.getBoolean("remove");
+		id = compound.getInteger("id");
+		if (compound.hasKey("next"))
+			next = BlockPos.fromLong(compound.getLong("next"));
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -40,7 +121,11 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 		compound.setDouble("yy", current.yCoord);
 		compound.setDouble("zz", current.zCoord);
 		compound.setBoolean("blocked", blocked);
-		compound.setTag("path", path.serializeNBT());
+		compound.setBoolean("center", centerReached);
+		compound.setBoolean("remove", toRemove);
+		compound.setInteger("id", id);
+		if (next != null)
+			compound.setLong("next", next.toLong());
 		return compound;
 	}
 
@@ -49,17 +134,12 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 		this.in = in;
 		this.current = current;
 		this.stack = stack;
+		this.id = (int) (System.nanoTime() % Integer.MAX_VALUE);
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((current == null) ? 0 : current.hashCode());
-		result = prime * result + ((in == null) ? 0 : in.hashCode());
-		result = prime * result + ((out == null) ? 0 : out.hashCode());
-		result = prime * result + ((stack == null) ? 0 : stack.toString().hashCode() + (stack.hasTagCompound()?stack.getTagCompound().hashCode():0));
-		return result;
+		return id;
 	}
 
 	@Override
@@ -71,27 +151,7 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 		if (getClass() != obj.getClass())
 			return false;
 		TransferItem other = (TransferItem) obj;
-		if (current == null) {
-			if (other.current != null)
-				return false;
-		} else if (!current.equals(other.current))
-			return false;
-		if (in == null) {
-			if (other.in != null)
-				return false;
-		} else if (!in.equals(other.in))
-			return false;
-		if (out == null) {
-			if (other.out != null)
-				return false;
-		} else if (!out.equals(other.out))
-			return false;
-		if (stack == null) {
-			if (other.stack != null)
-				return false;
-		} else if (!stack.isItemEqual(other.stack))
-			return false;
-		return true;
+		return id == other.id;
 	}
 
 	@Override

@@ -29,6 +29,7 @@ public class Graph {
 		BiMap<BlockPos, Vertex> map = getBiMap();
 		if (pp.equals(tile.getPos()))
 			return Lists.newArrayList(pp);
+		tile.buildNetwork();
 		computePaths(map.get(tile.getPos()));
 		List<Vertex> path = new ArrayList<Vertex>();
 		for (Vertex vertex = map.get(pp); vertex != null; vertex = vertex.previous)
@@ -41,7 +42,7 @@ public class Graph {
 
 	static class Vertex implements Comparable<Vertex> {
 		public final String name;
-		public Edge[] adjacencies;
+		public List<Edge> adjacencies;
 		public int minDistance = Integer.MAX_VALUE;
 		public Vertex previous;
 
@@ -49,10 +50,12 @@ public class Graph {
 			name = argName;
 		}
 
+		@Override
 		public String toString() {
 			return name;
 		}
 
+		@Override
 		public int compareTo(Vertex other) {
 			return Integer.compare(minDistance, other.minDistance);
 		}
@@ -79,7 +82,6 @@ public class Graph {
 				int distanceThroughU = u.minDistance + 1;
 				if (distanceThroughU < v.minDistance) {
 					vertexQueue.remove(v);
-
 					v.minDistance = distanceThroughU;
 					v.previous = u;
 					vertexQueue.add(v);
@@ -97,10 +99,7 @@ public class Graph {
 			for (BlockPos p2 : getConnectedPipes(p1)) {
 				edges.add(new Edge(map.get(p2)));
 			}
-			Edge[] ar = new Edge[edges.size()];
-			for (int i = 0; i < ar.length; i++)
-				ar[i] = edges.get(i);
-			map.get(p1).adjacencies = ar;
+			map.get(p1).adjacencies = Lists.newArrayList(edges);
 		}
 		return map;
 
@@ -108,11 +107,13 @@ public class Graph {
 
 	protected List<BlockPos> getConnectedPipes(BlockPos p) {
 		List<BlockPos> lis = Lists.newArrayList();
-		if (tile.getWorld().getBlockState(p).getBlock() instanceof BlockPipeBase)
+		if (tile.getWorld().getBlockState(p).getBlock() instanceof BlockPipeBase) {
 			for (EnumFacing f : EnumFacing.VALUES) {
-				if (((BlockPipeBase) tile.getWorld().getBlockState(p).getBlock()).getConnect(tile.getWorld(), p, f) == Connect.PIPE)
+				if (((BlockPipeBase) tile.getWorld().getBlockState(p).getBlock()).getConnect(tile.getWorld(), p, f) == Connect.PIPE) {
 					lis.add(p.offset(f));
+				}
 			}
+		}
 		return lis;
 	}
 }

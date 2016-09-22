@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -11,14 +12,10 @@ import mrriegel.limelib.helper.InvHelper;
 import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.util.Utils;
-import mrriegel.pipes.Graph;
 import mrriegel.pipes.TransferItem;
-import mrriegel.pipes.handler.ConfigHandler;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumFacing.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -48,10 +45,28 @@ public class TileItemPipe extends TilePipeBase {
 				startTransfer(f);
 		moveItems();
 	}
-	
-	void moveItems(){
-		for(TransferItem item:items)
-			item.current=item.current.addVector(0, 0.01, 0);
+
+	void moveItems() {
+		Iterator<TransferItem> it = items.iterator();
+		List<TransferItem> toRemove = Lists.newArrayList();
+		if (it.hasNext()) {
+			TransferItem item = it.next();
+			if (item.toRemove) {
+				System.out.println("remove: " + pos);
+				item.getCurrentPipe(worldObj).items.add(item);
+				item.toRemove = false;
+				item.getCurrentPipe(worldObj).sync();
+				toRemove.add(item);
+
+			}
+		}
+		items.removeAll(toRemove);
+		if (!toRemove.isEmpty())
+			sync();
+		for (TransferItem item : items) {
+			if (item.getCurrentPipe(worldObj) != null && !worldObj.isRemote)
+				item.move(worldObj, getSpeed());
+		}
 	}
 
 	public List<TransferItem> getItems() {
@@ -67,7 +82,7 @@ public class TileItemPipe extends TilePipeBase {
 		super.readFromNBT(compound);
 		items = Lists.newArrayList();
 		List<NBTTagCompound> i = NBTHelper.getTagList(compound, "items");
-//		System.out.println("read: "+i);
+		// System.out.println("read: "+i);
 		for (NBTTagCompound n : i) {
 			TransferItem t = new TransferItem();
 			t.deserializeNBT(n);
@@ -87,7 +102,7 @@ public class TileItemPipe extends TilePipeBase {
 		List<NBTTagCompound> i = Lists.newArrayList();
 		for (TransferItem t : items)
 			i.add(t.serializeNBT());
-//		System.out.println("write: "+i);
+		// System.out.println("write: "+i);
 		NBTHelper.setTagList(compound, "items", i);
 		for (EnumFacing f : EnumFacing.VALUES) {
 			compound.setTag(f.toString() + "setting", settings.get(f).serializeNBT());
@@ -95,7 +110,7 @@ public class TileItemPipe extends TilePipeBase {
 		return super.writeToNBT(compound);
 	}
 
-	long getFrequence() {
+	public long getFrequence() {
 		// if (upgrades.getStackInSlot(0) == null ||
 		// !(upgrades.getStackInSlot(0).getItem() instanceof ItemUpgrade))
 		return Boost.defaultFrequence;
@@ -103,15 +118,15 @@ public class TileItemPipe extends TilePipeBase {
 		// Transprot.upgrades.get(upgrades.getStackInSlot(0).getItemDamage()).frequence;
 	}
 
-	double getSpeed() {
+	public double getSpeed() {
 		// if (upgrades.getStackInSlot(0) == null ||
 		// !(upgrades.getStackInSlot(0).getItem() instanceof ItemUpgrade))
-		return Boost.defaultSpeed;
+		return Boost.defaultSpeed / 1D;
 		// return
 		// Transprot.upgrades.get(upgrades.getStackInSlot(0).getItemDamage()).speed;
 	}
 
-	int getStackSize() {
+	public int getStackSize() {
 		// if (upgrades.getStackInSlot(0) == null ||
 		// !(upgrades.getStackInSlot(0).getItem() instanceof ItemUpgrade))
 		return Boost.defaultStackSize;
@@ -119,17 +134,24 @@ public class TileItemPipe extends TilePipeBase {
 		// Transprot.upgrades.get(upgrades.getStackInSlot(0).getItemDamage()).stackSize;
 	}
 
-	boolean startTransfer(EnumFacing f) {
-//		System.out.println("start: "+(worldObj.isBlockPowered(pos) && settings.get(f).needRedstone));
-		if (!worldObj.isRemote&&worldObj.getTotalWorldTime() % getFrequence() == 0 && worldObj.isBlockPowered(pos) && settings.get(f).needRedstone) {
-			EnumFacing face = f;
+	@Override
+	public List<ItemStack> getDroppingItems() {
+		List<ItemStack> lis = Lists.newArrayList();
+		for (TransferItem t : items)
+			lis.add(t.stack);
+		return lis;
+	}
+
+	boolean startTransfer(EnumFacing outFacing) {
+		if (!worldObj.isRemote && worldObj.getTotalWorldTime() % getFrequence() == 0 && worldObj.isBlockPowered(pos) && settings.get(outFacing).needRedstone) {
+			EnumFacing face = outFacing;
 			if (!worldObj.getChunkFromBlockCoords(pos.offset(face)).isLoaded())
 				return false;
 			IItemHandler inv = InvHelper.getItemHandler(worldObj.getTileEntity(pos.offset(face)), face.getOpposite());
 			if (inv == null)
 				return false;
 			List<Pair<BlockPos, EnumFacing>> destis = Lists.newArrayList(targets);
-			switch (settings.get(f).mode) {
+			switch (settings.get(outFacing).mode) {
 			case FF:
 				Collections.sort(destis, new Comparator<Pair<BlockPos, EnumFacing>>() {
 					@Override
@@ -154,43 +176,46 @@ public class TileItemPipe extends TilePipeBase {
 				Collections.shuffle(destis);
 				break;
 			case RR:
-				if (settings.get(f).lastInsertIndex + 1 >= destis.size())
-					settings.get(f).lastInsertIndex = 0;
+				if (settings.get(outFacing).lastInsertIndex + 1 >= destis.size())
+					settings.get(outFacing).lastInsertIndex = 0;
 				else
-					settings.get(f).lastInsertIndex++;
+					settings.get(outFacing).lastInsertIndex++;
 				List<Pair<BlockPos, EnumFacing>> k = Lists.newArrayList();
 				for (int i = 0; i < destis.size(); i++) {
-					k.add(destis.get((settings.get(f).lastInsertIndex + i) % destis.size()));
+					k.add(destis.get((settings.get(outFacing).lastInsertIndex + i) % destis.size()));
 				}
 				destis = Lists.newArrayList(k);
 				break;
 			}
 			for (Pair<BlockPos, EnumFacing> pair : destis) {
 				for (int i = 0; i < inv.getSlots(); i++) {
-					if (inv.getStackInSlot(i) == null || !settings.get(f).blockedItems.isEmpty() /*|| !settings.get(f).canTransfer(inv.getStackInSlot(i))*/)
+					if (inv.getStackInSlot(i) == null || !settings.get(outFacing).blockedItems.isEmpty() || !settings.get(outFacing).canTransfer(inv.getStackInSlot(i)))
 						continue;
 					int max = getStackSize();
 					ItemStack send = inv.extractItem(i, max, true);
 					if (send == null || !((TileItemPipe) worldObj.getTileEntity(pair.getLeft())).settings.get(pair.getRight()).blockedItems.isEmpty())
 						continue;
 					IItemHandler dest = InvHelper.getItemHandler(worldObj.getTileEntity(pair.getLeft().offset(pair.getRight())), pair.getRight().getOpposite());
+					TileItemPipe pipe = (TileItemPipe) worldObj.getTileEntity(pair.getLeft());
+					if (!pipe.settings.get(pair.getRight()).canTransfer(send))
+						continue;
 					int canInsert = InvHelper.canInsert(dest, send);
 					if (canInsert <= 0)
 						continue;
 					int missing = Integer.MAX_VALUE;
-					if (settings.get(f).stockNum > 0) {
+					if (settings.get(outFacing).stockNum > 0) {
 						int contains = 0;
 						for (int j = 0; j < dest.getSlots(); j++) {
-							if (dest.getStackInSlot(j) != null && settings.get(f).equal(dest.getStackInSlot(j), send)) {
+							if (dest.getStackInSlot(j) != null && settings.get(outFacing).equal(dest.getStackInSlot(j), send)) {
 								contains += dest.getStackInSlot(j).stackSize;
 							}
 						}
 						for (TransferItem t : items) {
-							if (t.in.equals(pair) && settings.get(f).equal(t.stack, send)) {
+							if (t.in.equals(pair) && settings.get(outFacing).equal(t.stack, send)) {
 								contains += t.stack.stackSize;
 							}
 						}
-						missing = settings.get(f).stockNum - contains;
+						missing = settings.get(outFacing).stockNum - contains;
 					}
 					if (missing <= 0)
 						continue;
@@ -198,27 +223,27 @@ public class TileItemPipe extends TilePipeBase {
 					ItemStack x = inv.extractItem(i, canInsert, true);
 					if (x != null) {
 						Vec3d vec = null;
-						switch (f) {
+						switch (outFacing) {
 						case DOWN:
-							vec = new Vec3d(.5, 0, .5);
+							vec = new Vec3d(.5, 0.05, .5);
 							break;
 						case EAST:
-							vec = new Vec3d(1, .5, .5);
+							vec = new Vec3d(0.95, .5, .5);
 							break;
 						case NORTH:
-							vec = new Vec3d(.5, .5, 0);
+							vec = new Vec3d(.5, .5, 0.05);
 							break;
 						case SOUTH:
-							vec = new Vec3d(.5, .5, 1);
+							vec = new Vec3d(.5, .5, 0.95);
 							break;
 						case UP:
-							vec = new Vec3d(.5, 1, .5);
+							vec = new Vec3d(.5, 0.95, .5);
 							break;
 						case WEST:
-							vec = new Vec3d(0, .5, .5);
+							vec = new Vec3d(0.05, .5, .5);
 							break;
 						}
-						TransferItem tr = new TransferItem(Pair.of(pos, f), Pair.of(pair.getLeft(), pair.getRight()), vec.addVector(pos.getX(), pos.getY(), pos.getZ()), x);
+						TransferItem tr = new TransferItem(Pair.of(pos, outFacing), Pair.of(pair.getLeft(), pair.getRight()), vec.addVector(pos.getX(), pos.getY(), pos.getZ()), x);
 						items.add(tr);
 						inv.extractItem(i, canInsert, false);
 						sync();
@@ -232,13 +257,13 @@ public class TileItemPipe extends TilePipeBase {
 
 	@Override
 	public boolean isOpaque() {
-		return blockType != null ? blockType.getClass().getName().contains("opa") : false;
+		return blockType != null ? blockType.getClass().getName().contains("opaqu") : false;
 	}
 
 	public static class Setting implements INBTSerializable<NBTTagCompound> {
 		Mode mode = Mode.NF;
 		ItemStackHandler filter = new ItemStackHandler(12);
-		boolean needRedstone = true, whitelist = true, oreDict = false, meta = true, nbt = false, mod = false;
+		boolean needRedstone = true, whitelist = false, oreDict = false, meta = true, nbt = false, mod = false;
 		Deque<ItemStack> blockedItems = new ArrayDeque<ItemStack>();
 		int lastInsertIndex, stockNum;
 

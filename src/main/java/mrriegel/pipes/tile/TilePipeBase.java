@@ -3,7 +3,9 @@ package mrriegel.pipes.tile;
 import java.util.Map;
 import java.util.Set;
 
+import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.tile.CommonTile;
+import mrriegel.limelib.util.Utils;
 import mrriegel.pipes.Graph;
 import mrriegel.pipes.block.BlockPipeBase;
 import mrriegel.pipes.block.BlockPipeBase.Connect;
@@ -15,6 +17,7 @@ import net.minecraft.world.chunk.Chunk;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -41,6 +44,7 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		for (EnumFacing f : EnumFacing.VALUES) {
 			valids.put(f, compound.hasKey(f.toString() + "valid") ? compound.getBoolean(f.toString() + "valid") : true);
 			outs.put(f, compound.hasKey(f.toString() + "out") ? compound.getBoolean(f.toString() + "out") : false);
+			pipes = Sets.newHashSet(Utils.getBlockPosList(NBTHelper.getLongList(compound, "pipes")));
 		}
 		super.readFromNBT(compound);
 	}
@@ -50,6 +54,8 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		for (EnumFacing f : EnumFacing.VALUES) {
 			compound.setBoolean(f.toString() + "valid", valids.get(f));
 			compound.setBoolean(f.toString() + "out", outs.get(f));
+			if (pipes != null)
+				NBTHelper.setLongList(compound, "pipes", Utils.getLongList(Lists.newArrayList(pipes)));
 		}
 		return super.writeToNBT(compound);
 	}
@@ -89,9 +95,7 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		// }
 		if (needsRefresh) {
 			buildNetwork();
-			sync();
 			markDirty();
-			// System.out.println("build");
 			needsRefresh = false;
 		}
 	}
@@ -113,6 +117,7 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 				if (block.getConnect(worldObj, t, f) == Connect.TILE)
 					targets.add(Pair.<BlockPos, EnumFacing> of(t, f));
 		}
+		sync();
 	}
 
 	private boolean hasCons(BlockPos p) {
@@ -139,12 +144,6 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 				addPipes(nei);
 			}
 		}
-	}
-
-	@Override
-	public void onLoad() {
-		super.onLoad();
-		setNeedsRefresh(true);
 	}
 
 	public void setNeedsRefresh(boolean needsRefresh) {

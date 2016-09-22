@@ -8,10 +8,6 @@ import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
 
 public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> {
 
@@ -25,13 +21,8 @@ public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> 
 
 			GlStateManager.pushMatrix();
 			double factor = Minecraft.getDebugFPS() / 20d;
-			// if (!tr.blocked && !mc.isGamePaused() &&
-			// mc.theWorld.getChunkFromBlockCoords(tr.rec.getLeft()).isLoaded())
-			// {
-			// tr.current = tr.current.add(tr.getVec().scale((te.getSpeed() /
-			// factor) / tr.getVec().lengthVector()));
-			// }
-			//
+			item.move(getWorld(), te.getSpeed() / factor);
+
 			GlStateManager.translate(x, y, z);
 			GlStateManager.translate(item.current.xCoord - te.getPos().getX(), item.current.yCoord - te.getPos().getY(), item.current.zCoord - te.getPos().getZ());
 
@@ -40,9 +31,10 @@ public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> 
 
 			GlStateManager.pushMatrix();
 			GlStateManager.disableLighting();
-
-			float rotation = (float) (720.0 * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL);
-			GlStateManager.rotate(rotation, 0.0F, 1.0F, 0);
+			if (!mc.isGamePaused()) {
+				float rotation = (float) (720.0 * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL);
+				GlStateManager.rotate(rotation, 0.0F, 1.0F, 0);
+			}
 			GlStateManager.scale(0.4F, 0.4F, 0.4F);
 			GlStateManager.pushAttrib();
 			RenderHelper.enableStandardItemLighting();

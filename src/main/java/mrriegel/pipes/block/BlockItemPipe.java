@@ -1,14 +1,6 @@
 package mrriegel.pipes.block;
 
-import java.util.Random;
-
-import org.apache.commons.lang3.tuple.Pair;
-
-import com.google.common.collect.Lists;
-
 import mrriegel.limelib.helper.InvHelper;
-import mrriegel.limelib.helper.NBTHelper;
-import mrriegel.pipes.Graph;
 import mrriegel.pipes.TransferItem;
 import mrriegel.pipes.tile.TileItemPipe;
 import mrriegel.pipes.tile.TilePipeBase;
@@ -16,7 +8,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -24,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 public class BlockItemPipe extends BlockPipeBase {
 
@@ -75,12 +68,15 @@ public class BlockItemPipe extends BlockPipeBase {
 			break;
 		}
 		TransferItem tr = new TransferItem(Pair.of(pos, f), Pair.of(BlockPos.ORIGIN, EnumFacing.DOWN), vec.addVector(pos.getX(), pos.getY(), pos.getZ()), new ItemStack(Blocks.CACTUS));
-		
+
 		// tile.getItems().add(tr);
 		// System.out.println(tile.getItems());
-//		if (!worldIn.isRemote && !tile.getEnds().isEmpty())
-//			for (BlockPos p : tile.getGraph().getShortestPath(Lists.newArrayList(tile.getEnds()).get(new Random().nextInt(tile.getEnds().size()))))
-//				worldIn.setBlockState(p.up(), Blocks.RED_SANDSTONE.getDefaultState());
+		// if (!worldIn.isRemote && !tile.getEnds().isEmpty())
+		// for (BlockPos p :
+		// tile.getGraph().getShortestPath(Lists.newArrayList(tile.getEnds()).get(new
+		// Random().nextInt(tile.getEnds().size()))))
+		// worldIn.setBlockState(p.up(),
+		// Blocks.RED_SANDSTONE.getDefaultState());
 		return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
 	}
 
