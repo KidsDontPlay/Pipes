@@ -64,6 +64,7 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 				blocked = false;
 			}
 		} else {
+//			System.out.println("1+ "+current);
 			if (!centerReached) {
 				current = current.add(getVecToCenter().scale(speed / getVecToCenter().lengthVector()));
 				if (inCenter(getCurrentPos())) {
@@ -74,8 +75,11 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 					current = new Vec3d(tmp.getX() + .5, tmp.getY() + .5, tmp.getZ() + .5);
 				}
 			} else {
+				System.out.println(getVecToNextCenter().lengthVector());
+				System.out.println(speed / getVecToNextCenter().lengthVector());
 				current = current.add(getVecToNextCenter().scale(speed / getVecToNextCenter().lengthVector()));
 			}
+//			System.out.println("2+ "+current);
 		}
 	}
 

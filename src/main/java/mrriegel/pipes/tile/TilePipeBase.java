@@ -45,6 +45,7 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 			valids.put(f, compound.hasKey(f.toString() + "valid") ? compound.getBoolean(f.toString() + "valid") : true);
 			outs.put(f, compound.hasKey(f.toString() + "out") ? compound.getBoolean(f.toString() + "out") : false);
 			pipes = Sets.newHashSet(Utils.getBlockPosList(NBTHelper.getLongList(compound, "pipes")));
+			// System.out.println("sizeclent "+pipes.size());
 		}
 		super.readFromNBT(compound);
 	}
@@ -132,14 +133,14 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		return new Graph(this);
 	}
 
-	private void addPipes(BlockPos pos) {
+	protected void addPipes(BlockPos pos) {
 		for (EnumFacing f : EnumFacing.VALUES) {
 			BlockPos nei = pos.offset(f);
 			BlockPipeBase block = (BlockPipeBase) worldObj.getBlockState(pos).getBlock();
 			Chunk chunk = worldObj.getChunkFromBlockCoords(nei);
 			if (chunk == null || !chunk.isLoaded() || block.getConnect(worldObj, pos, f) != Connect.PIPE)
 				continue;
-			if (worldObj.getTileEntity(nei) instanceof TileItemPipe && !pipes.contains(nei)) {
+			if (getClass().isInstance(worldObj.getTileEntity(nei)) && !pipes.contains(nei)) {
 				pipes.add(nei);
 				addPipes(nei);
 			}
@@ -148,10 +149,15 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 
 	public void setNeedsRefresh(boolean needsRefresh) {
 		this.needsRefresh = needsRefresh;
+	}
+
+	public void markForRefresh() {
+		this.needsRefresh = true;
+		sync();
 		if (pipes != null)
 			for (BlockPos p : pipes)
 				if (worldObj.getTileEntity(p) instanceof TilePipeBase && !((TilePipeBase) worldObj.getTileEntity(p)).needsRefresh)
-					((TilePipeBase) worldObj.getTileEntity(p)).setNeedsRefresh(true);
+					((TilePipeBase) worldObj.getTileEntity(p)).markForRefresh();
 	}
 
 	public abstract boolean isOpaque();

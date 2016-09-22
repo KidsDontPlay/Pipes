@@ -14,10 +14,12 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -64,7 +66,7 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 		}
 		if (!blockIn.hasTileEntity() && blockIn != Blocks.AIR && !replaceable)
 			return;
-		((TilePipeBase) worldIn.getTileEntity(pos)).setNeedsRefresh(true);
+		((TilePipeBase) worldIn.getTileEntity(pos)).markForRefresh();
 	}
 
 	@Override
@@ -110,7 +112,6 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-		TilePipeBase tile = (TilePipeBase) worldIn.getTileEntity(pos);
 		return state.withProperty(NORTH, getConnect(worldIn, pos, EnumFacing.NORTH)).withProperty(SOUTH, getConnect(worldIn, pos, EnumFacing.SOUTH)).withProperty(WEST, getConnect(worldIn, pos, EnumFacing.WEST)).withProperty(EAST, getConnect(worldIn, pos, EnumFacing.EAST)).withProperty(UP, getConnect(worldIn, pos, EnumFacing.UP)).withProperty(DOWN, getConnect(worldIn, pos, EnumFacing.DOWN));
 	}
 
@@ -227,6 +228,14 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 		if (state.getValue(UP) != Connect.NULL)
 			f5 = 1;
 		return new AxisAlignedBB(f, f4, f2, f1, f5, f3);
+	}
+
+	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+		((TilePipeBase) worldIn.getTileEntity(pos)).buildNetwork();
+		((TilePipeBase) worldIn.getTileEntity(pos)).markForRefresh();
+		((TilePipeBase) worldIn.getTileEntity(pos)).setNeedsRefresh(false);
 	}
 
 	public static enum Connect implements IStringSerializable {

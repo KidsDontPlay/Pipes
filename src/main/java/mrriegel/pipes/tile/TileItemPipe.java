@@ -13,11 +13,14 @@ import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.util.Utils;
 import mrriegel.pipes.TransferItem;
+import mrriegel.pipes.block.BlockPipeBase;
+import mrriegel.pipes.block.BlockPipeBase.Connect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -47,24 +50,28 @@ public class TileItemPipe extends TilePipeBase {
 	}
 
 	void moveItems() {
-		Iterator<TransferItem> it = items.iterator();
-		List<TransferItem> toRemove = Lists.newArrayList();
-		if (it.hasNext()) {
+//		 if(true)return;
+		Iterator<TransferItem> it = items.listIterator();
+		boolean remvoed = false;
+		while (it.hasNext()) {
 			TransferItem item = it.next();
-			if (item.toRemove) {
-				System.out.println("remove: " + pos);
+			if (item.toRemove && !item.getCurrentPos().equals(pos)) {
+				// System.out.println("remove: " + pos);
+				System.out.println(item.current);
+				System.out.println(item.getCurrentPos());
+				System.out.println(worldObj.getBlockState(item.getCurrentPos()).getBlock());
 				item.getCurrentPipe(worldObj).items.add(item);
 				item.toRemove = false;
-				item.getCurrentPipe(worldObj).sync();
-				toRemove.add(item);
-
+				item.centerReached = false;
+				// item.getCurrentPipe(worldObj).buildNetwork();
+				// item.getCurrentPipe(worldObj).sync();
+				it.remove();
 			}
 		}
-		items.removeAll(toRemove);
-		if (!toRemove.isEmpty())
+		if (remvoed)
 			sync();
 		for (TransferItem item : items) {
-			if (item.getCurrentPipe(worldObj) != null && !worldObj.isRemote)
+			if (item.getCurrentPipe(worldObj) != null /* && !worldObj.isRemote */)
 				item.move(worldObj, getSpeed());
 		}
 	}
@@ -110,28 +117,16 @@ public class TileItemPipe extends TilePipeBase {
 		return super.writeToNBT(compound);
 	}
 
-	public long getFrequence() {
-		// if (upgrades.getStackInSlot(0) == null ||
-		// !(upgrades.getStackInSlot(0).getItem() instanceof ItemUpgrade))
+	public short getFrequence() {
 		return Boost.defaultFrequence;
-		// return
-		// Transprot.upgrades.get(upgrades.getStackInSlot(0).getItemDamage()).frequence;
 	}
 
 	public double getSpeed() {
-		// if (upgrades.getStackInSlot(0) == null ||
-		// !(upgrades.getStackInSlot(0).getItem() instanceof ItemUpgrade))
 		return Boost.defaultSpeed / 1D;
-		// return
-		// Transprot.upgrades.get(upgrades.getStackInSlot(0).getItemDamage()).speed;
 	}
 
 	public int getStackSize() {
-		// if (upgrades.getStackInSlot(0) == null ||
-		// !(upgrades.getStackInSlot(0).getItem() instanceof ItemUpgrade))
 		return Boost.defaultStackSize;
-		// return
-		// Transprot.upgrades.get(upgrades.getStackInSlot(0).getItemDamage()).stackSize;
 	}
 
 	@Override
@@ -326,15 +321,15 @@ public class TileItemPipe extends TilePipeBase {
 	}
 
 	static class Boost {
-		public static final long defaultFrequence = 40l;
+		public static final short defaultFrequence = 40;
 		public static final double defaultSpeed = .02;
 		public static final int defaultStackSize = 1;
 
-		public final long frequence;
+		public final short frequence;
 		public final double speed;
 		public final int stackSize;
 
-		public Boost(long frequence, double speed, int stackSize) {
+		public Boost(short frequence, double speed, int stackSize) {
 			this.frequence = frequence;
 			this.speed = speed;
 			this.stackSize = stackSize;

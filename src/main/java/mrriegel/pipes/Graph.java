@@ -26,10 +26,10 @@ public class Graph {
 
 	public List<BlockPos> getShortestPath(BlockPos pp) {
 		List<BlockPos> lis = Lists.newArrayList();
+//		tile.buildNetwork();
 		BiMap<BlockPos, Vertex> map = getBiMap();
 		if (pp.equals(tile.getPos()))
 			return Lists.newArrayList(pp);
-		tile.buildNetwork();
 		computePaths(map.get(tile.getPos()));
 		List<Vertex> path = new ArrayList<Vertex>();
 		for (Vertex vertex = map.get(pp); vertex != null; vertex = vertex.previous)
@@ -107,12 +107,15 @@ public class Graph {
 
 	protected List<BlockPos> getConnectedPipes(BlockPos p) {
 		List<BlockPos> lis = Lists.newArrayList();
+		// System.out.println(tile.getWorld().getBlockState(p).getBlock()+" "+p);
 		if (tile.getWorld().getBlockState(p).getBlock() instanceof BlockPipeBase) {
 			for (EnumFacing f : EnumFacing.VALUES) {
 				if (((BlockPipeBase) tile.getWorld().getBlockState(p).getBlock()).getConnect(tile.getWorld(), p, f) == Connect.PIPE) {
 					lis.add(p.offset(f));
 				}
 			}
+		} else {
+			System.out.println("NO PIPE AT " + p.toString().toUpperCase() + ". ERROR");
 		}
 		return lis;
 	}
