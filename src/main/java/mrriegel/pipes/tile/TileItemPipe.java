@@ -1,6 +1,7 @@
 package mrriegel.pipes.tile;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -50,29 +52,41 @@ public class TileItemPipe extends TilePipeBase {
 	}
 
 	void moveItems() {
-//		 if(true)return;
+		// if (true)
+		// return;
 		Iterator<TransferItem> it = items.listIterator();
 		boolean remvoed = false;
 		while (it.hasNext()) {
 			TransferItem item = it.next();
 			if (item.toRemove && !item.getCurrentPos().equals(pos)) {
 				// System.out.println("remove: " + pos);
-				System.out.println(item.current);
-				System.out.println(item.getCurrentPos());
-				System.out.println(worldObj.getBlockState(item.getCurrentPos()).getBlock());
-				item.getCurrentPipe(worldObj).items.add(item);
+				// System.out.println(item.current);
+				// System.out.println(item.getCurrentPos());
+				// System.out.println(worldObj.getBlockState(item.getCurrentPos()).getBlock());
+				if (worldObj.getTileEntity(item.getCurrentPos()) instanceof TileItemPipe) {
+					item.getCurrentPipe(worldObj).items.add(item);
+				} else if (InvHelper.hasItemHandler(worldObj, item.getCurrentPos(), item.in.getRight().getOpposite())) {
+					IItemHandler inv = InvHelper.getItemHandler(worldObj, item.getCurrentPos(), item.in.getRight().getOpposite());
+					ItemStack rest = ItemHandlerHelper.insertItemStacked(inv, item.stack, false);
+					System.out.println("rest: " + rest);
+				}
 				item.toRemove = false;
 				item.centerReached = false;
 				// item.getCurrentPipe(worldObj).buildNetwork();
 				// item.getCurrentPipe(worldObj).sync();
 				it.remove();
+				remvoed = true;
 			}
 		}
 		if (remvoed)
 			sync();
 		for (TransferItem item : items) {
-			if (item.getCurrentPipe(worldObj) != null /* && !worldObj.isRemote */)
+//			System.out.println("TileItemPipe.moveItems()");
+			if (worldObj.getTileEntity(item.getCurrentPos()) instanceof TileItemPipe && item.getCurrentPipe(worldObj) != null
+			// && !worldObj.isRemote
+			) {
 				item.move(worldObj, getSpeed());
+			}
 		}
 	}
 
@@ -89,7 +103,6 @@ public class TileItemPipe extends TilePipeBase {
 		super.readFromNBT(compound);
 		items = Lists.newArrayList();
 		List<NBTTagCompound> i = NBTHelper.getTagList(compound, "items");
-		// System.out.println("read: "+i);
 		for (NBTTagCompound n : i) {
 			TransferItem t = new TransferItem();
 			t.deserializeNBT(n);
@@ -109,7 +122,6 @@ public class TileItemPipe extends TilePipeBase {
 		List<NBTTagCompound> i = Lists.newArrayList();
 		for (TransferItem t : items)
 			i.add(t.serializeNBT());
-		// System.out.println("write: "+i);
 		NBTHelper.setTagList(compound, "items", i);
 		for (EnumFacing f : EnumFacing.VALUES) {
 			compound.setTag(f.toString() + "setting", settings.get(f).serializeNBT());
@@ -122,7 +134,7 @@ public class TileItemPipe extends TilePipeBase {
 	}
 
 	public double getSpeed() {
-		return Boost.defaultSpeed / 1D;
+		return Boost.defaultSpeed;
 	}
 
 	public int getStackSize() {
@@ -134,6 +146,8 @@ public class TileItemPipe extends TilePipeBase {
 		List<ItemStack> lis = Lists.newArrayList();
 		for (TransferItem t : items)
 			lis.add(t.stack);
+		for (EnumFacing f : EnumFacing.VALUES)
+			lis.addAll(settings.get(f).blockedItems);
 		return lis;
 	}
 

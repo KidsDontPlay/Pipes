@@ -25,26 +25,28 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 	public TransferItem() {
 	}
 
-	public boolean refreshNext(World world) {
+	public void refreshNext(World world) {
 		BlockPos now = getCurrentPos();
 		if (next != null && !now.equals(next))
-			return true;
-		if (next != null)
+			return;
+		if (next != null) {
 			toRemove = true;
+			System.out.println("remove");
+		}
 		TileItemPipe pipe = getCurrentPipe(world);
 		// System.out.println(pipe+"  "+toRemove);
 		List<BlockPos> path = pipe.getGraph().getShortestPath(in.getLeft());
 		// toRemove=true;
 		if (path.isEmpty()) {
 			blocked = true;
-			return true;
+			return;
 		}
 		if (path.size() > 1) {
 			next = path.get(1);
-			return true;
+			return;
 		} else {
-			next = in.getKey();
-			return false;
+			next = in.getLeft().offset(in.getRight());
+			return;
 		}
 	}
 
@@ -64,22 +66,21 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 				blocked = false;
 			}
 		} else {
-//			System.out.println("1+ "+current);
+			// System.out.println("1+ "+current);
 			if (!centerReached) {
 				current = current.add(getVecToCenter().scale(speed / getVecToCenter().lengthVector()));
 				if (inCenter(getCurrentPos())) {
-					System.out.println("center reached");
 					centerReached = true;
 					getCurrentPipe(world).sync();
 					BlockPos tmp = getCurrentPos();
 					current = new Vec3d(tmp.getX() + .5, tmp.getY() + .5, tmp.getZ() + .5);
 				}
 			} else {
-				System.out.println(getVecToNextCenter().lengthVector());
-				System.out.println(speed / getVecToNextCenter().lengthVector());
 				current = current.add(getVecToNextCenter().scale(speed / getVecToNextCenter().lengthVector()));
+				if (!(world.getTileEntity(getCurrentPos()) instanceof TileItemPipe))
+					toRemove = true;
 			}
-//			System.out.println("2+ "+current);
+			// System.out.println("2+ "+current);
 		}
 	}
 

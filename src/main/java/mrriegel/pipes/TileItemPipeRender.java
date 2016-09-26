@@ -21,10 +21,10 @@ public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> 
 
 			GlStateManager.pushMatrix();
 			double factor = Minecraft.getDebugFPS() / 20d;
-//			item.move(getWorld(), te.getSpeed() / factor);
+			// item.move(getWorld(), te.getSpeed() / factor);
 
 			GlStateManager.translate(x, y, z);
-			GlStateManager.translate(item.current.xCoord - te.getPos().getX(), item.current.yCoord - te.getPos().getY(), item.current.zCoord - te.getPos().getZ());
+			GlStateManager.translate(item.current.xCoord - te.getX(), item.current.yCoord - te.getY(), item.current.zCoord - te.getZ());
 
 			EntityItem ei = new EntityItem(mc.theWorld, 0, 0, 0, item.stack);
 			ei.hoverStart = 0;
@@ -35,7 +35,7 @@ public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> 
 				float rotation = (float) (720.0 * (System.currentTimeMillis() & 0x3FFFL) / 0x3FFFL);
 				GlStateManager.rotate(rotation, 0.0F, 1.0F, 0);
 			}
-			GlStateManager.scale(0.3F, 0.3F, 0.3F);
+			GlStateManager.scale(0.35F, 0.35F, 0.35F);
 			GlStateManager.pushAttrib();
 			RenderHelper.enableStandardItemLighting();
 			itemRenderer.renderItem(ei.getEntityItem(), ItemCameraTransforms.TransformType.FIXED);
