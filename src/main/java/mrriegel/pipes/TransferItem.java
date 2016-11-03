@@ -73,7 +73,7 @@ public class TransferItem implements INBTSerializable<NBTTagCompound> {
 					centerReached = true;
 					getCurrentPipe(world).sync();
 					BlockPos tmp = getCurrentPos();
-					current = new Vec3d(tmp.getX() + .5, tmp.getY() + .5, tmp.getZ() + .5);
+//					current = new Vec3d(tmp.getX() + .5, tmp.getY() + .5, tmp.getZ() + .5);
 				}
 			} else {
 				current = current.add(getVecToNextCenter().scale(speed / getVecToNextCenter().lengthVector()));

@@ -21,8 +21,9 @@ public class TileItemPipeRender extends TileEntitySpecialRenderer<TileItemPipe> 
 
 			GlStateManager.pushMatrix();
 			double factor = Minecraft.getDebugFPS() / 20d;
-			// item.move(getWorld(), te.getSpeed() / factor);
-
+			if (!mc.isGamePaused())
+				// item.move(getWorld(), te.getSpeed() / factor);
+				;
 			GlStateManager.translate(x, y, z);
 			GlStateManager.translate(item.current.xCoord - te.getX(), item.current.yCoord - te.getY(), item.current.zCoord - te.getZ());
 

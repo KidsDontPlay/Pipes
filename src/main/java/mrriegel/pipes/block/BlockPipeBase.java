@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import mrriegel.limelib.block.CommonBlockContainer;
-import mrriegel.pipes.proxy.ClientProxy;
+import mrriegel.pipes.proxy.CommonProxy;
 import mrriegel.pipes.tile.TilePipeBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -19,7 +19,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -47,7 +46,7 @@ public abstract class BlockPipeBase extends CommonBlockContainer<TilePipeBase> {
 
 	public BlockPipeBase(String name) {
 		super(Material.IRON, name);
-		setCreativeTab(ClientProxy.tab);
+		setCreativeTab(CommonProxy.tab);
 		map.put(NORTH, EnumFacing.NORTH);
 		map.put(SOUTH, EnumFacing.SOUTH);
 		map.put(WEST, EnumFacing.WEST);

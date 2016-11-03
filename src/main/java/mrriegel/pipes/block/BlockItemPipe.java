@@ -1,12 +1,10 @@
 package mrriegel.pipes.block;
 
 import mrriegel.limelib.helper.InvHelper;
-import mrriegel.pipes.TransferItem;
 import mrriegel.pipes.tile.TileItemPipe;
 import mrriegel.pipes.tile.TilePipeBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -16,8 +14,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-import org.apache.commons.lang3.tuple.Pair;
-
 public class BlockItemPipe extends BlockPipeBase {
 
 	public BlockItemPipe(String name) {
@@ -25,7 +21,7 @@ public class BlockItemPipe extends BlockPipeBase {
 	}
 
 	@Override
-	public TileEntity createNewTileEntity(World worldIn, int meta) {
+	public TileEntity createTileEntity(World world, IBlockState state) {
 		return new TileItemPipe();
 	}
 
@@ -42,7 +38,7 @@ public class BlockItemPipe extends BlockPipeBase {
 	@Override
 	public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, ItemStack heldItem, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileItemPipe tile = (TileItemPipe) worldIn.getTileEntity(pos);
-		tile.buildNetwork();
+		tile.onClient();
 		EnumFacing f = getFace(hitX, hitY, hitZ);
 		if (f == null)
 			return super.onBlockActivated(worldIn, pos, state, playerIn, hand, heldItem, side, hitX, hitY, hitZ);
@@ -67,7 +63,8 @@ public class BlockItemPipe extends BlockPipeBase {
 			vec = new Vec3d(0, .5, .5);
 			break;
 		}
-		TransferItem tr = new TransferItem(Pair.of(pos, f), Pair.of(BlockPos.ORIGIN, EnumFacing.DOWN), vec.addVector(pos.getX(), pos.getY(), pos.getZ()), new ItemStack(Blocks.CACTUS));
+		vec.func_189985_c();
+		//		TransferItem tr = new TransferItem(Pair.of(pos, f), Pair.of(BlockPos.ORIGIN, EnumFacing.DOWN), vec.addVector(pos.getX(), pos.getY(), pos.getZ()), new ItemStack(Blocks.CACTUS));
 
 		// tile.getItems().add(tr);
 		// System.out.println(tile.getItems());

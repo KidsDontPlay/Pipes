@@ -44,9 +44,9 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		for (EnumFacing f : EnumFacing.VALUES) {
 			valids.put(f, compound.hasKey(f.toString() + "valid") ? compound.getBoolean(f.toString() + "valid") : true);
 			outs.put(f, compound.hasKey(f.toString() + "out") ? compound.getBoolean(f.toString() + "out") : false);
-			pipes = Sets.newHashSet(Utils.getBlockPosList(NBTHelper.getLongList(compound, "pipes")));
 			// System.out.println("sizeclent "+pipes.size());
 		}
+		pipes = Sets.newHashSet(Utils.getBlockPosList(NBTHelper.getLongList(compound, "pipes")));
 		super.readFromNBT(compound);
 	}
 
@@ -55,9 +55,9 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		for (EnumFacing f : EnumFacing.VALUES) {
 			compound.setBoolean(f.toString() + "valid", valids.get(f));
 			compound.setBoolean(f.toString() + "out", outs.get(f));
-			if (pipes != null)
-				NBTHelper.setLongList(compound, "pipes", Utils.getLongList(Lists.newArrayList(pipes)));
 		}
+		if (pipes != null)
+			NBTHelper.setLongList(compound, "pipes", Utils.getLongList(Lists.newArrayList(pipes)));
 		return super.writeToNBT(compound);
 	}
 
@@ -96,7 +96,6 @@ public abstract class TilePipeBase extends CommonTile implements ITickable {
 		// }
 		if (needsRefresh) {
 			buildNetwork();
-			markDirty();
 			needsRefresh = false;
 		}
 	}

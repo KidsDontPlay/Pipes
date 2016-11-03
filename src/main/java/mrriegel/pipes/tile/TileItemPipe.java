@@ -1,7 +1,6 @@
 package mrriegel.pipes.tile;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Deque;
@@ -14,18 +13,16 @@ import mrriegel.limelib.helper.NBTHelper;
 import mrriegel.limelib.helper.StackHelper;
 import mrriegel.limelib.util.Utils;
 import mrriegel.pipes.TransferItem;
-import mrriegel.pipes.block.BlockPipeBase;
-import mrriegel.pipes.block.BlockPipeBase.Connect;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -55,7 +52,6 @@ public class TileItemPipe extends TilePipeBase {
 		// if (true)
 		// return;
 		Iterator<TransferItem> it = items.listIterator();
-		boolean remvoed = false;
 		while (it.hasNext()) {
 			TransferItem item = it.next();
 			if (item.toRemove && !item.getCurrentPos().equals(pos)) {
@@ -69,20 +65,20 @@ public class TileItemPipe extends TilePipeBase {
 					IItemHandler inv = InvHelper.getItemHandler(worldObj, item.getCurrentPos(), item.in.getRight().getOpposite());
 					ItemStack rest = ItemHandlerHelper.insertItemStacked(inv, item.stack, false);
 					System.out.println("rest: " + rest);
+					if(rest!=null)
+						//add to blocked items
+						;
 				}
 				item.toRemove = false;
 				item.centerReached = false;
 				// item.getCurrentPipe(worldObj).buildNetwork();
 				// item.getCurrentPipe(worldObj).sync();
 				it.remove();
-				remvoed = true;
+				markForSync();
 			}
 		}
-		if (remvoed)
-			sync();
 		for (TransferItem item : items) {
-//			System.out.println("TileItemPipe.moveItems()");
-			if (worldObj.getTileEntity(item.getCurrentPos()) instanceof TileItemPipe && item.getCurrentPipe(worldObj) != null
+			if (worldObj.getTileEntity(item.getCurrentPos()) instanceof TileItemPipe
 			// && !worldObj.isRemote
 			) {
 				item.move(worldObj, getSpeed());
@@ -197,34 +193,32 @@ public class TileItemPipe extends TilePipeBase {
 				break;
 			}
 			for (Pair<BlockPos, EnumFacing> pair : destis) {
+				TileItemPipe destPipe = (TileItemPipe) worldObj.getTileEntity(pair.getLeft());
+				Setting destSetting = destPipe.settings.get(pair.getRight());
+				IItemHandler dest = InvHelper.getItemHandler(worldObj.getTileEntity(pair.getLeft().offset(pair.getRight())), pair.getRight().getOpposite());
+				if (dest == null)
+					continue;
 				for (int i = 0; i < inv.getSlots(); i++) {
-					if (inv.getStackInSlot(i) == null || !settings.get(outFacing).blockedItems.isEmpty() || !settings.get(outFacing).canTransfer(inv.getStackInSlot(i)))
-						continue;
-					int max = getStackSize();
-					ItemStack send = inv.extractItem(i, max, true);
-					if (send == null || !((TileItemPipe) worldObj.getTileEntity(pair.getLeft())).settings.get(pair.getRight()).blockedItems.isEmpty())
-						continue;
-					IItemHandler dest = InvHelper.getItemHandler(worldObj.getTileEntity(pair.getLeft().offset(pair.getRight())), pair.getRight().getOpposite());
-					TileItemPipe pipe = (TileItemPipe) worldObj.getTileEntity(pair.getLeft());
-					if (!pipe.settings.get(pair.getRight()).canTransfer(send))
+					ItemStack send = inv.extractItem(i, getStackSize(), true);
+					if (send == null || !settings.get(outFacing).blockedItems.isEmpty() || !settings.get(outFacing).canTransfer(send) || !destSetting.blockedItems.isEmpty() || !destSetting.canTransfer(send))
 						continue;
 					int canInsert = InvHelper.canInsert(dest, send);
 					if (canInsert <= 0)
 						continue;
 					int missing = Integer.MAX_VALUE;
-					if (settings.get(outFacing).stockNum > 0) {
+					if (destSetting.stockNum > 0) {
 						int contains = 0;
 						for (int j = 0; j < dest.getSlots(); j++) {
-							if (dest.getStackInSlot(j) != null && settings.get(outFacing).equal(dest.getStackInSlot(j), send)) {
+							if (dest.getStackInSlot(j) != null && destSetting.equal(dest.getStackInSlot(j), send)) {
 								contains += dest.getStackInSlot(j).stackSize;
 							}
 						}
 						for (TransferItem t : items) {
-							if (t.in.equals(pair) && settings.get(outFacing).equal(t.stack, send)) {
+							if (t.in.equals(pair) && destSetting.equal(t.stack, send)) {
 								contains += t.stack.stackSize;
 							}
 						}
-						missing = settings.get(outFacing).stockNum - contains;
+						missing = destSetting.stockNum - contains;
 					}
 					if (missing <= 0)
 						continue;
@@ -252,10 +246,10 @@ public class TileItemPipe extends TilePipeBase {
 							vec = new Vec3d(0.05, .5, .5);
 							break;
 						}
-						TransferItem tr = new TransferItem(Pair.of(pos, outFacing), Pair.of(pair.getLeft(), pair.getRight()), vec.addVector(pos.getX(), pos.getY(), pos.getZ()), x);
+						TransferItem tr = new TransferItem(Pair.of(pos, outFacing), Pair.of(pair.getLeft(), pair.getRight()), vec.addVector(getX(), getY(), getZ()), x);
 						items.add(tr);
 						inv.extractItem(i, canInsert, false);
-						sync();
+						markForSync();
 						return true;
 					}
 				}
