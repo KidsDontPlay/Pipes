@@ -31,7 +31,7 @@ public class Graph {
 		if (pp.equals(tile.getPos()))
 			return Lists.newArrayList(pp);
 		computePaths(map.get(tile.getPos()));
-		List<Vertex> path = new ArrayList<Vertex>();
+		List<Vertex> path = Lists.newArrayList();
 		for (Vertex vertex = map.get(pp); vertex != null; vertex = vertex.previous)
 			path.add(vertex);
 		Collections.reverse(path);

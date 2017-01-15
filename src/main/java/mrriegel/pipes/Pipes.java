@@ -1,6 +1,6 @@
 package mrriegel.pipes;
 
-import mrriegel.limelib.helper.IProxy;
+import mrriegel.pipes.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -22,7 +22,7 @@ public class Pipes {
 	public static Logger logger;
 
 	@SidedProxy(clientSide = "mrriegel.pipes.proxy.ClientProxy", serverSide = "mrriegel.pipes.proxy.CommonProxy")
-	public static IProxy proxy;
+	public static CommonProxy proxy;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
